@@ -17,7 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CompressedStaticFiles" Version="1.0.4" />
+    <!-- <PackageReference Include="CompressedStaticFiles" Version="*" /> -->
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="VueCliMiddleware" Version="2.1.1" />
