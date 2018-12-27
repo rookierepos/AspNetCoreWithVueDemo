@@ -1,24 +1,23 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace AspNetCoreWithVueDemo.Compressed
+namespace CompressedStaticFile
 {
     public class CompressedStaticFileMiddleware
     {
         private static Dictionary<string, string> compressionTypes =
             new Dictionary<string, string>()
-            {
-                { "gzip", ".gz" }, {"br", ".br" }
+            { { "gzip", ".gz" }, { "br", ".br" }
             };
 
         private readonly IOptions<StaticFileOptions> _staticFileOptions;
@@ -45,8 +44,8 @@ namespace AspNetCoreWithVueDemo.Compressed
 
             _logger = loggerFactory.CreateLogger<CompressedStaticFileMiddleware>();
 
-
-            this._staticFileOptions = staticFileOptions ?? throw new ArgumentNullException(nameof(staticFileOptions));
+            this._staticFileOptions = staticFileOptions ??
+                throw new ArgumentNullException(nameof(staticFileOptions));
             InitializeStaticFileOptions(hostingEnv, staticFileOptions);
 
             _base = new StaticFileMiddleware(next, hostingEnv, staticFileOptions, loggerFactory);
@@ -76,9 +75,9 @@ namespace AspNetCoreWithVueDemo.Compressed
                         // (for example "application/brotli" instead of "text/html")
                         string contentType = null;
                         if (contentTypeProvider.TryGetContentType(ctx.File.PhysicalPath.Remove(
-                            ctx.File.PhysicalPath.Length - fileExtension.Length, fileExtension.Length), out contentType))
+                                ctx.File.PhysicalPath.Length - fileExtension.Length, fileExtension.Length), out contentType))
                             ctx.Context.Response.ContentType = contentType;
-                        ctx.Context.Response.Headers.Add("Content-Encoding", new[] { compressionType });
+                        ctx.Context.Response.Headers.Add("Content-Encoding", new [] { compressionType });
                     }
                 }
             };
@@ -131,7 +130,7 @@ namespace AspNetCoreWithVueDemo.Compressed
         /// </summary>
         private static IEnumerable<string> GetSupportedEncodings(HttpContext context)
         {
-            var browserSupportedCompressionTypes = context.Request.Headers["Accept-Encoding"].ToString().Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var browserSupportedCompressionTypes = context.Request.Headers["Accept-Encoding"].ToString().Split(new [] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
             var validCompressionTypes = compressionTypes.Keys.Intersect(browserSupportedCompressionTypes, StringComparer.OrdinalIgnoreCase);
             return validCompressionTypes;
         }
